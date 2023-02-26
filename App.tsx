@@ -1,80 +1,89 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { FC, useState, useEffect } from 'react';
+import { StatusBar, StyleSheet, Text, View, Image, TouchableHighlight, TouchableOpacity, Button, Alert, TextInput } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-const App = () => {
-  console.log("My app is running")
-  const [id, setId] = useState("")
-  const [name, setName] = useState("")
-  const [address, setAddress] = useState("")
-  const onPressCallback = () => {
-    console.log("button was prassed")
-  }
+import StudentList from './componnents/StudentList';
+import StudentDetails from './componnents/StudentDetails';
+import StudentAdd from './componnents/StudentAdd';
+
+const InfoScreen: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
   return (
-    <View style={styles.container}>
-      <Image source={require('./assets/avatar.png')} style={styles.avatar}></Image>
-      <TextInput
-        style={styles.input}
-        onChangeText={setId}
-        value={id}
-        placeholder={'Student ID'}
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setName}
-        value={name}
-        placeholder={'Student Name'}
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setAddress}
-        value={address}
-        placeholder={'Student Address'}
-      />
-      <View style={styles.buttonesContainer}>
-        <TouchableOpacity onPress={onPressCallback} style={styles.button}>
-          <Text style={styles.buttonText}>CANCELL</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onPressCallback} style={styles.button}>
-          <Text style={styles.buttonText}>SAVE</Text>
-        </TouchableOpacity>
-      </View >
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Info Screen</Text>
     </View>
   );
 }
 
 
 
+const StudentStack = createNativeStackNavigator();
+const StudentStackCp: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
+  const addNewStudents = () => {
+    navigation.navigate('StudentAdd')
+  }
+  return (
+    <StudentStack.Navigator>
+      <StudentStack.Screen name="StudentList" component={StudentList} options={{
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={addNewStudents}>
+            <Ionicons name={'add-outline'} size={40} color={'gray'} />
+          </TouchableOpacity>
+        ),
+      }
+      } />
+      <StudentStack.Screen name="StudentDetails" component={StudentDetails} />
+      <StudentStack.Screen name="StudentAdd" component={StudentAdd} />
+    </StudentStack.Navigator>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+const App: FC = () => {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName = "";
+          if (route.name === 'InfoScreen') {
+            iconName = focused
+              ? 'information-circle'
+              : 'information-circle-outline';
+          } else if (route.name === 'StudentStackCp') {
+            iconName = focused ? 'list-circle' : 'list-circle-outline';
+          }
+
+          // You can return any component that you like here!
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray',
+      })}>
+        <Tab.Screen name="StudentStackCp" component={StudentStackCp} options={{ headerShown: false }} />
+        <Tab.Screen name="InfoScreen" component={InfoScreen} />
+      </Tab.Navigator>
+
+    </NavigationContainer>
+  );
+}
+
+
+// const App: FC = () => {
+//   return (
+//     <StudentDetails></StudentDetails>
+//   )
+// };
+
 const styles = StyleSheet.create({
   container: {
+    marginTop: StatusBar.currentHeight,
     flex: 1,
+    backgroundColor: 'grey',
   },
-  avatar: {
-    height: 300,
-    resizeMode: "contain",
-    alignSelf: 'center'
-  },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonesContainer: {
-    // flex: 1,
-    flexDirection: 'row'
-  },
-  button: {
-    flex: 1,
-    margin: 12,
-    padding: 12,
-    backgroundColor: 'blue',
-    borderRadius: 10,
-  },
-  buttonText: {
-    textAlign: 'center',
-    color: 'white'
-  }
+
 });
 
 export default App

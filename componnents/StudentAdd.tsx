@@ -82,7 +82,7 @@ const StudentAdd: FC<{ route: any, navigation: any }> = ({ route, navigation }) 
         <ScrollView>
             <View style={styles.container}>
                 <View>
-                    {avatarUri == "" && <Image source={require('../assets/ava.png')} style={styles.avatar}></Image>}
+                    {avatarUri == "" && <Image source={require('../assets/avatar.png')} style={styles.avatar}></Image>}
                     {avatarUri != "" && <Image source={{ uri: avatarUri }} style={styles.avatar}></Image>}
 
                     <TouchableOpacity onPress={openCamera} >
