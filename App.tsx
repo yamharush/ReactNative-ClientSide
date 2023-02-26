@@ -1,75 +1,135 @@
 import { FC, useState, useEffect } from 'react';
-import { StatusBar, StyleSheet, Text, View, Image, TouchableHighlight, TouchableOpacity, Button, Alert, TextInput } from 'react-native';
+import {
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableHighlight,
+  TouchableOpacity,
+  Button,
+  Alert,
+  TextInput,
+} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import StudentList from './componnents/StudentList';
 import StudentDetails from './componnents/StudentDetails';
 import StudentAdd from './componnents/StudentAdd';
-
-const InfoScreen: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Info Screen</Text>
-    </View>
-  );
-}
-
+import { LoginScreen } from './screens/LoginScreen';
+import PostAdd from './componnents/PostAdd';
+import PostsList from './componnents/PostsList';
+import { clearStorage, getFromStorage } from './services/asyncStorage.service';
+import UserModel, { User } from './model/UserModel';
+import { InfoScreen } from './screens/InfoScreen';
 
 
 const StudentStack = createNativeStackNavigator();
-const StudentStackCp: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
+const StudentStackCp: FC<{ route: any; navigation: any }> = ({
+  route,
+  navigation,
+}) => {
   const addNewStudents = () => {
-    navigation.navigate('StudentAdd')
-  }
+    navigation.navigate('PostAdd');
+  };
   return (
     <StudentStack.Navigator>
-      <StudentStack.Screen name="StudentList" component={StudentList} options={{
-        headerRight: () => (
-          <TouchableOpacity
-            onPress={addNewStudents}>
-            <Ionicons name={'add-outline'} size={40} color={'gray'} />
-          </TouchableOpacity>
-        ),
-      }
-      } />
-      <StudentStack.Screen name="StudentDetails" component={StudentDetails} />
-      <StudentStack.Screen name="StudentAdd" component={StudentAdd} />
+      <StudentStack.Screen
+        name='Posts'
+        component={PostsList}
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={addNewStudents}>
+              <Ionicons name={'add-outline'} size={40} color={'gray'} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <StudentStack.Screen name='StudentDetails' component={StudentDetails} />
+      <StudentStack.Screen name='PostAdd' component={PostAdd} />
     </StudentStack.Navigator>
   );
-}
+};
 
 const Tab = createBottomTabNavigator();
 const App: FC = () => {
+  const [user, setUser] = useState<User>();
+
+  useEffect(() => {
+
+    loadUser();
+  }, []);
+
+  async function loadUser() {
+    const res: any = await UserModel.getUserInfo();
+    console.log('init', res.data);
+    if (res.data.err) {
+      setUser(null)
+    } else {
+      setUser(res.data);
+    }
+  }
   return (
     <NavigationContainer>
-      <Tab.Navigator screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName = "";
-          if (route.name === 'InfoScreen') {
-            iconName = focused
-              ? 'information-circle'
-              : 'information-circle-outline';
-          } else if (route.name === 'StudentStackCp') {
-            iconName = focused ? 'list-circle' : 'list-circle-outline';
-          }
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName = '';
+            if (route.name === 'InfoScreen') {
+              iconName = focused
+                ? 'information-circle'
+                : 'information-circle-outline';
+            } else if (route.name === 'StudentStackCp') {
+              iconName = focused ? 'list-circle' : 'list-circle-outline';
+            } else if (route.name === 'LoginScreen') {
+              iconName = focused ? 'home' : 'home-outline';
+            }
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+        })}
+      >
+        {user && (
+          <Tab.Screen
+            name='StudentStackCp'
+            component={StudentStackCp}
+            options={{ headerShown: false }}
+          />
+        )}
+        {user && (
+          <Tab.Screen
+            name='InfoScreen'
+            component={(route: any, navigation: any) => (
+              <InfoScreen
+                navigation={navigation}
+                route={route}
+                user={user}
+                loadUser={loadUser}
 
-          // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: 'tomato',
-        tabBarInactiveTintColor: 'gray',
-      })}>
-        <Tab.Screen name="StudentStackCp" component={StudentStackCp} options={{ headerShown: false }} />
-        <Tab.Screen name="InfoScreen" component={InfoScreen} />
+              ></InfoScreen>
+            )}
+          />
+        )}
+        {!user && (
+          <Tab.Screen
+            name='LoginScreen'
+            component={(route: any, navigation: any) => (
+              <LoginScreen
+                navigation={navigation}
+                route={route}
+                loadUser={loadUser}
+              ></LoginScreen>
+            )}
+          />
+        )}
       </Tab.Navigator>
-
     </NavigationContainer>
   );
-}
-
+};
 
 // const App: FC = () => {
 //   return (
@@ -83,7 +143,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'grey',
   },
-
 });
 
-export default App
+export default App;

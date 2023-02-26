@@ -14,7 +14,7 @@ const ListItem: FC<{ name: String, id: String, image: String, onRowSelected: (id
         return (
             <TouchableHighlight onPress={onClick} underlayColor={'gainsboro'}>
                 <View style={styles.listRow}>
-                    {image == "" && <Image style={styles.listRowImage} source={require('../assets/avatar.png')} />}
+                    {image == "" && <Image style={styles.listRowImage} source={require('../assets/ava.png')} />}
                     {image != "" && <Image style={styles.listRowImage} source={{ uri: image.toString() }} />}
 
                     <View style={styles.listRowTextContainer}>

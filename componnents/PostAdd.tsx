@@ -1,116 +1,128 @@
 import { useState, FC, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput, ScrollView } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    Button,
+    Alert,
+    TextInput,
+    ScrollView,
+} from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import StudentModel, { Student } from '../model/StudentModel';
 import * as ImagePicker from 'expo-image-picker';
+import PostModel, { Post } from '../model/PostModel';
 
-
-const StudentAdd: FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
-    console.log("My app is running")
-    const [id, setId] = useState("")
-    const [name, setName] = useState("")
-    const [address, setAddress] = useState("")
-    const [avatarUri, setAvatarUri] = useState("")
+const PostAdd: FC<{ route: any; navigation: any }> = ({
+    route,
+    navigation,
+}) => {
+    // const [id, setId] = useState("")
+    const [message, setMessage] = useState('');
+    const [id, setId] = useState('');
+    const [postUri, setPostUri] = useState('');
 
     const askPermission = async () => {
         try {
-            const res = await ImagePicker.getCameraPermissionsAsync()
+            const res = await ImagePicker.getCameraPermissionsAsync();
             if (!res.granted) {
-                alert("camera permission is requiered!")
+                alert('camera permission is requiered!');
             }
         } catch (err) {
-            console.log("ask permission error " + err)
+            console.log('ask permission error ' + err);
         }
-    }
+    };
     useEffect(() => {
-        askPermission()
-    }, [])
+        askPermission();
+    }, []);
 
     const openCamera = async () => {
         try {
-            const res = await ImagePicker.launchCameraAsync()
+            const res = await ImagePicker.launchCameraAsync();
             if (!res.canceled && res.assets.length > 0) {
-                const uri = res.assets[0].uri
-                setAvatarUri(uri)
+                const uri = res.assets[0].uri;
+                setPostUri(uri);
             }
-
         } catch (err) {
-            console.log("open camera error:" + err)
+            console.log('open camera error:' + err);
         }
-    }
+    };
 
     const openGallery = async () => {
         try {
-            const res = await ImagePicker.launchImageLibraryAsync()
+            const res = await ImagePicker.launchImageLibraryAsync();
             if (!res.canceled && res.assets.length > 0) {
-                const uri = res.assets[0].uri
-                setAvatarUri(uri)
+                const uri = res.assets[0].uri;
+                setPostUri(uri);
             }
-
         } catch (err) {
-            console.log("open camera error:" + err)
+            console.log('open camera error:' + err);
         }
-    }
+    };
 
     const onSaveCallback = async () => {
-        console.log("save button was pressed")
-        const student: Student = {
-            id: id,
-            name: name,
-            image: "url",
-        }
+        console.log('save button was pressed');
+        const post: Post = {
+            id,
+            message,
+            userId: id,
+            image: 'url',
+        };
         try {
-            if (avatarUri != "") {
-                console.log("uploading image")
-                const url = await StudentModel.uploadImage(avatarUri)
-                student.image = url
-                console.log("got url from upload: " + url)
+            if (postUri != '') {
+                console.log('uploading image');
+                const url = await StudentModel.uploadImage(postUri);
+                post.image = url;
+                console.log('got url from upload: ' + url);
             }
-            console.log("saving stundet")
-            await StudentModel.addStudent(student)
+            console.log('saving post');
+            await PostModel.addPost(post);
         } catch (err) {
-            console.log("fail adding studnet: " + err)
+            console.log('fail adding post: ' + err);
         }
-        navigation.goBack()
-    }
+        navigation.goBack();
+    };
 
     const onCancellCallback = () => {
-        navigation.goBack()
-    }
+        navigation.goBack();
+    };
     return (
         <ScrollView>
             <View style={styles.container}>
                 <View>
-                    {avatarUri == "" && <Image source={require('../assets/ava.png')} style={styles.avatar}></Image>}
-                    {avatarUri != "" && <Image source={{ uri: avatarUri }} style={styles.avatar}></Image>}
-
-                    <TouchableOpacity onPress={openCamera} >
+                    {postUri == '' && (
+                        <Image
+                            source={require('../assets/avatar.png')}
+                            style={styles.avatar}
+                        ></Image>
+                    )}
+                    {postUri != '' && (
+                        <Image source={{ uri: postUri }} style={styles.avatar}></Image>
+                    )}
+                    <TouchableOpacity onPress={openCamera}>
                         <Ionicons name={'camera'} style={styles.cameraButton} size={50} />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={openGallery} >
+                    <TouchableOpacity onPress={openGallery}>
                         <Ionicons name={'image'} style={styles.galleryButton} size={50} />
                     </TouchableOpacity>
                 </View>
-
                 <TextInput
                     style={styles.input}
                     onChangeText={setId}
                     value={id}
-                    placeholder={'Student ID'}
+                    placeholder={'Id'}
                 />
                 <TextInput
                     style={styles.input}
-                    onChangeText={setName}
-                    value={name}
-                    placeholder={'Student Name'}
+                    onChangeText={setMessage}
+                    value={message}
+                    placeholder={'Message'}
                 />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setAddress}
-                    value={address}
-                    placeholder={'Student Address'}
-                />
+
+
                 <View style={styles.buttonesContainer}>
                     <TouchableOpacity onPress={onCancellCallback} style={styles.button}>
                         <Text style={styles.buttonText}>CANCELL</Text>
@@ -122,8 +134,7 @@ const StudentAdd: FC<{ route: any, navigation: any }> = ({ route, navigation }) 
             </View>
         </ScrollView>
     );
-}
-
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -131,9 +142,9 @@ const styles = StyleSheet.create({
     },
     avatar: {
         height: 250,
-        resizeMode: "contain",
+        resizeMode: 'contain',
         alignSelf: 'center',
-        width: '100%'
+        width: '100%',
     },
     cameraButton: {
         position: 'absolute',
@@ -168,8 +179,8 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         textAlign: 'center',
-        color: 'white'
-    }
+        color: 'white',
+    },
 });
 
-export default StudentAdd
+export default PostAdd;
