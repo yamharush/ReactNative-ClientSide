@@ -7,6 +7,7 @@ import {
     StyleSheet,
     TouchableOpacity,
     Image,
+    ScrollView
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
@@ -89,75 +90,77 @@ export const LoginScreen: FC<{
         }
     };
     return (
-        <View style={styles.container}>
-            <View style={{ width: '80%', alignSelf: 'center' }}>
-                {mode === 'register' && (
-                    <View>
-                        {!user.image && (
-                            <Image
-                                source={require('../assets/avatar.png')}
-                                style={styles.avatar}
-                            ></Image>
-                        )}
-                        {user.image && (
-                            <Image source={{ uri: user.image }} style={styles.avatar}></Image>
-                        )}
-                        <TouchableOpacity onPress={openCamera}>
-                            <Ionicons name={'camera'} style={styles.cameraButton} size={50} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={openGallery}>
-                            <Ionicons name={'image'} style={styles.galleryButton} size={50} />
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {mode === 'register' && (
+        <ScrollView>
+            <View style={styles.container}>
+                <View style={{ width: '80%', alignSelf: 'center' }}>
+                    {mode === 'register' && (
+                        <View>
+                            {!user.image && (
+                                <Image
+                                    source={require('../assets/avatar.png')}
+                                    style={styles.avatar}
+                                ></Image>
+                            )}
+                            {user.image && (
+                                <Image source={{ uri: user.image }} style={styles.avatar}></Image>
+                            )}
+                            <TouchableOpacity onPress={openCamera}>
+                                <Ionicons name={'camera'} style={styles.cameraButton} size={50} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={openGallery}>
+                                <Ionicons name={'image'} style={styles.galleryButton} size={50} />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                    {mode === 'register' && (
+                        <TextInput
+                            style={styles.input}
+                            value={user.name}
+                            placeholder='Enter Name'
+                            onChangeText={(name: string) => setUser({ ...user, name })}
+                        />
+                    )}
+                    <TextInput
+                        placeholder='Enter Email'
+                        value={user.email}
+                        style={styles.input}
+                        onChangeText={(email: string) => setUser({ ...user, email })}
+                    />
+
                     <TextInput
                         style={styles.input}
-                        value={user.name}
-                        placeholder='Enter Name'
-                        onChangeText={(name: string) => setUser({ ...user, name })}
+                        value={user.password}
+                        placeholder='Enter Password'
+                        onChangeText={(password: string) => setUser({ ...user, password })}
                     />
-                )}
-                <TextInput
-                    placeholder='Enter Email'
-                    value={user.email}
-                    style={styles.input}
-                    onChangeText={(email: string) => setUser({ ...user, email })}
-                />
+                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                        <Text style={styles.buttonText}>{mode}</Text>
+                    </TouchableOpacity>
 
-                <TextInput
-                    style={styles.input}
-                    value={user.password}
-                    placeholder='Enter Password'
-                    onChangeText={(password: string) => setUser({ ...user, password })}
-                />
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>{mode}</Text>
-                </TouchableOpacity>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ marginRight: 15 }}>
+                            {mode === 'login'
+                                ? 'Dont have an account?'
+                                : 'Already Have Account?'}
+                        </Text>
+                        <Text
+                            style={{
+                                textTransform: 'capitalize',
+                                color: 'blue',
+                                fontWeight: 'bold',
+                            }}
+                            onPress={() => setMode(mode === 'login' ? 'register' : 'login')}
+                        >
+                            {mode === 'login' ? 'register' : 'login'}
+                        </Text>
+                    </View>
 
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={{ marginRight: 15 }}>
-                        {mode === 'login'
-                            ? 'Dont have an account?'
-                            : 'Already Have Account?'}
-                    </Text>
-                    <Text
-                        style={{
-                            textTransform: 'capitalize',
-                            color: 'blue',
-                            fontWeight: 'bold',
-                        }}
-                        onPress={() => setMode(mode === 'login' ? 'register' : 'login')}
-                    >
-                        {mode === 'login' ? 'register' : 'login'}
-                    </Text>
-                </View>
-
-                {/* <TouchableOpacity style={styles.button} onPress={onGoogleButtonPress}>
+                    {/* <TouchableOpacity style={styles.button} onPress={onGoogleButtonPress}>
           <Text style={styles.buttonText}>Sign In With Google</Text>
         </TouchableOpacity> */}
+                </View>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
