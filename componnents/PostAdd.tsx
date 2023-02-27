@@ -15,14 +15,14 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import StudentModel, { Student } from '../model/StudentModel';
 import * as ImagePicker from 'expo-image-picker';
 import PostModel, { Post } from '../model/PostModel';
+import { User } from '../model/UserModel';
 
-const PostAdd: FC<{ route: any; navigation: any }> = ({
+const PostAdd: FC<{ route: any; navigation: any; user: User }> = ({
     route,
     navigation,
+    user,
 }) => {
-    // const [id, setId] = useState("")
     const [message, setMessage] = useState('');
-    const [id, setId] = useState('');
     const [postUri, setPostUri] = useState('');
 
     const askPermission = async () => {
@@ -66,9 +66,9 @@ const PostAdd: FC<{ route: any; navigation: any }> = ({
     const onSaveCallback = async () => {
         console.log('save button was pressed');
         const post: Post = {
-            id,
+            id: '',
             message,
-            userId: id,
+            userId: user?.id || '',
             image: 'url',
         };
         try {
@@ -83,11 +83,11 @@ const PostAdd: FC<{ route: any; navigation: any }> = ({
         } catch (err) {
             console.log('fail adding post: ' + err);
         }
-        navigation.goBack();
+        route.navigation.goBack();
     };
 
     const onCancellCallback = () => {
-        navigation.goBack();
+        route.navigation.goBack();
     };
     return (
         <ScrollView>
@@ -111,17 +111,10 @@ const PostAdd: FC<{ route: any; navigation: any }> = ({
                 </View>
                 <TextInput
                     style={styles.input}
-                    onChangeText={setId}
-                    value={id}
-                    placeholder={'Id'}
-                />
-                <TextInput
-                    style={styles.input}
                     onChangeText={setMessage}
                     value={message}
                     placeholder={'Message'}
                 />
-
 
                 <View style={styles.buttonesContainer}>
                     <TouchableOpacity onPress={onCancellCallback} style={styles.button}>

@@ -6,7 +6,11 @@ import {
     Button,
     StyleSheet,
     TouchableOpacity,
+    Image,
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import * as ImagePicker from 'expo-image-picker';
+
 import { User } from '../model/UserModel';
 import UserModel from '../model/UserModel';
 import { saveToStorage } from '../services/asyncStorage.service';
@@ -23,7 +27,9 @@ export const LoginScreen: FC<{
         email: '',
         password: '',
         name: '',
+        image: '',
     });
+
     //   GoogleSignin.configure({
     //     webClientId:
     //       '710942905986-qaehumf27ft2m1ipg7s1tvtnbvmq9osg.apps.googleusercontent.com',
@@ -55,13 +61,55 @@ export const LoginScreen: FC<{
         setUser({ email: '', password: '', name: '' });
     }
 
-
     useEffect(() => {
         resetForm();
     }, [mode]);
+
+    const openCamera = async () => {
+        try {
+            const res = await ImagePicker.launchCameraAsync();
+            if (!res.canceled && res.assets.length > 0) {
+                const image = res.assets[0].uri;
+                setUser({ ...user, image });
+            }
+        } catch (err) {
+            console.log('open camera error:' + err);
+        }
+    };
+
+    const openGallery = async () => {
+        try {
+            const res = await ImagePicker.launchImageLibraryAsync();
+            if (!res.canceled && res.assets.length > 0) {
+                const image = res.assets[0].uri;
+                setUser({ ...user, image });
+            }
+        } catch (err) {
+            console.log('open camera error:' + err);
+        }
+    };
     return (
         <View style={styles.container}>
             <View style={{ width: '80%', alignSelf: 'center' }}>
+                {mode === 'register' && (
+                    <View>
+                        {!user.image && (
+                            <Image
+                                source={require('../assets/avatar.png')}
+                                style={styles.avatar}
+                            ></Image>
+                        )}
+                        {user.image && (
+                            <Image source={{ uri: user.image }} style={styles.avatar}></Image>
+                        )}
+                        <TouchableOpacity onPress={openCamera}>
+                            <Ionicons name={'camera'} style={styles.cameraButton} size={50} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={openGallery}>
+                            <Ionicons name={'image'} style={styles.galleryButton} size={50} />
+                        </TouchableOpacity>
+                    </View>
+                )}
                 {mode === 'register' && (
                     <TextInput
                         style={styles.input}
@@ -76,6 +124,7 @@ export const LoginScreen: FC<{
                     style={styles.input}
                     onChangeText={(email: string) => setUser({ ...user, email })}
                 />
+
                 <TextInput
                     style={styles.input}
                     value={user.password}

@@ -14,33 +14,38 @@ const ListItem: FC<{
     message: String;
     id: String;
     image: String;
+    userImage: string;
     onRowSelected: (id: String) => void;
-}> = ({ message, id, image, onRowSelected }) => {
+}> = ({ message, id, image, onRowSelected, userImage }) => {
     const onClick = () => {
-        console.log('int he row: row was selected ' + id);
+        console.log('int he row: row was selected ' + image);
         onRowSelected(id);
     };
 
-    console.log('image: ' + image);
     return (
         <TouchableHighlight onPress={onClick} underlayColor={'gainsboro'}>
             <View style={styles.listRow}>
-                {image == '' && (
+                {!userImage && (
                     <Image
                         style={styles.listRowImage}
                         source={require('../assets/avatar.png')}
                     />
                 )}
-                {image != '' && (
+                {userImage && (
                     <Image
                         style={styles.listRowImage}
-                        source={{ uri: image.toString() }}
+                        source={{ uri: userImage.toString() }}
                     />
                 )}
 
                 <View style={styles.listRowTextContainer}>
                     <Text style={styles.listRowName}>{message}</Text>
-                    <Text style={styles.listRowId}>{id}</Text>
+                    {image && (
+                        <Image
+                            style={styles.smallImage}
+                            source={{ uri: image.toString() }}
+                        />
+                    )}
                 </View>
             </View>
         </TouchableHighlight>
@@ -68,7 +73,7 @@ const PostsList: FC<{ route: any; navigation: any }> = ({
             } catch (err) {
                 console.log('fail fetching posts ' + err);
             }
-            console.log('fetching finish');
+            console.log('fetching finish', posts);
             setPosts(posts);
         });
         return unsubscribe;
@@ -84,6 +89,7 @@ const PostsList: FC<{ route: any; navigation: any }> = ({
                     id={item.id}
                     message={item.message}
                     image={item.image || ''}
+                    userImage={item.userImage || ''}
                     onRowSelected={onRowSelected}
                 />
             )}
@@ -113,10 +119,15 @@ const styles = StyleSheet.create({
         height: 130,
         width: 130,
     },
+    smallImage: {
+        height: 100,
+        width: 100,
+    },
     listRowTextContainer: {
         flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
         margin: 10,
-        justifyContent: 'space-around',
     },
     listRowName: {
         fontSize: 30,

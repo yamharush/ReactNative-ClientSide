@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import UserModel, { User } from '../model/UserModel';
 import { clearStorage } from '../services/asyncStorage.service';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import * as ImagePicker from 'expo-image-picker';
 export const InfoScreen: FC<{
     route: any;
     navigation: any;
@@ -23,6 +25,7 @@ export const InfoScreen: FC<{
     const [edit, setEdit] = useState<boolean>(false);
     const [email, setEmail] = useState<string>(user.email);
     const [name, setName] = useState<string>(user.name);
+    const [image, setImage] = useState<string>(user?.image || '');
 
     const handleSubmit = async () => {
         if (edit) {
@@ -30,6 +33,7 @@ export const InfoScreen: FC<{
                 ...user,
                 email,
                 name,
+                image,
             });
             console.log('data after  update:', updatedUser.data);
             setEdit(false);
@@ -43,26 +47,78 @@ export const InfoScreen: FC<{
     };
 
     function onLogout() {
-        console.log('ggg');
         UserModel.logout();
         clearStorage();
         loadUser();
     }
 
+    const openCamera = async () => {
+        try {
+            const res = await ImagePicker.launchCameraAsync();
+            if (!res.canceled && res.assets.length > 0) {
+                const image = res.assets[0].uri;
+                setImage(image);
+            }
+        } catch (err) {
+            console.log('open camera error:' + err);
+        }
+    };
+
+    const openGallery = async () => {
+        try {
+            const res = await ImagePicker.launchImageLibraryAsync();
+            if (!res.canceled && res.assets.length > 0) {
+                const image = res.assets[0].uri;
+                setImage(image);
+            }
+        } catch (err) {
+            console.log('open camera error:' + err);
+        }
+    };
+
     return (
         <View style={{ flex: 1 }}>
             <View>
-                {!user.image && (
-                    <Image
-                        source={require('../assets/avatar.png')}
-                        style={styles.avatar}
-                    ></Image>
-                )}
-                {user.image && (
-                    <Image source={{ uri: user.image }} style={styles.avatar}></Image>
-                )}
+                {/* {!user.image && (
+          <Image
+            source={require('../assets/ava.png')}
+            style={styles.avatar}
+          ></Image>
+        )}
+        {user.image && (
+          <Image source={{ uri: user.image }} style={styles.avatar}></Image>
+        )} */}
+                <View>
+                    {!image && (
+                        <Image
+                            source={require('../assets/avatar.png')}
+                            style={styles.avatar}
+                        ></Image>
+                    )}
+                    {image && (
+                        <Image source={{ uri: image }} style={styles.avatar}></Image>
+                    )}
+                    {edit && (
+                        <>
+                            <TouchableOpacity onPress={openCamera}>
+                                <Ionicons
+                                    name={'camera'}
+                                    style={styles.cameraButton}
+                                    size={50}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={openGallery}>
+                                <Ionicons
+                                    name={'image'}
+                                    style={styles.galleryButton}
+                                    size={50}
+                                />
+                            </TouchableOpacity>
+                        </>
+                    )}
+                </View>
             </View>
-            <View style={{ width: '80%', alignSelf: 'center' }}>
+            <View style={{ width: '80%', alignSelf: 'center', marginTop: 20 }}>
                 {!edit && <Text style={{ marginBottom: 15 }}>Email:{email}</Text>}
                 {!edit && <Text style={{ marginBottom: 15 }}>Name:{name}</Text>}
                 {edit && (

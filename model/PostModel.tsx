@@ -4,6 +4,7 @@ export interface Post {
     userId: string;
     message: string;
     image?: string;
+    userImage?: string;
 }
 
 const addPost = async (post: Post) => {
@@ -28,7 +29,8 @@ const getAllPosts = async () => {
                 userId: obj.sender,
                 id: obj._id,
                 message: obj.message,
-                image: obj.avatarUrl,
+                image: obj?.image || '',
+                userImage: obj?.userImage || '',
             };
             data.push(st);
         });
