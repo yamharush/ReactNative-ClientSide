@@ -1,51 +1,25 @@
-import apiClient from './ClientApi';
-import { Student } from '../model/StudentModel';
-import { User } from '../model/UserModel';
-import { getFromStorage } from '../services/asyncStorage.service';
+import apiClient from "./ClientApi"
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const register = async (userJson: any) => {
+    return apiClient.post("auth/register", userJson)
+} 
 
-const login = async (user: User) => {
-    return apiClient.post('/auth/login', user);
-};
+const login = async (userJson: any) => {
+    return apiClient.post("auth/login", userJson)
+}
 
-const logout = async () => {
-    const token = await getFromStorage('accessToken');
-    return apiClient.get(
-        '/auth/logout',
-        {},
-        {
-            headers: { authorization: `Breaer ${token}` },
-        }
-    );
-};
-
-const register = async (user: User) => {
-    console.log('user to send server', { user });
-
-    return apiClient.post('/auth/register', user);
-};
-
-const getUserInfo = async () => {
-    const token = await getFromStorage('accessToken');
-    return apiClient.get(
-        '/auth',
-        {},
-        {
-            headers: { authorization: `Breaer ${token}` },
-        }
-    );
-};
-
-const updateUser = async (user: User) => {
-    const token = await getFromStorage('accessToken');
-    return apiClient.put('/auth', user, {
-        headers: { authorization: `Breaer ${token}` },
+const logout = async (): Promise<void> => {
+    const token = await AsyncStorage.getItem("accessToken");
+    await apiClient.get<void>("/auth/logout", {}, {
+      headers: { authorization: `Bearer ${token}` },
     });
-};
+    await AsyncStorage.clear();
+    console.log("Logged out");
+  };
+
 
 export default {
-    login,
     register,
-    getUserInfo,
-    updateUser,
+    login,
     logout,
-};
+}
