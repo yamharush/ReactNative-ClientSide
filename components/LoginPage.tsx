@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { FC, useState } from "react";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {
   StyleSheet,
   Text,
@@ -12,20 +13,21 @@ import {
 } from "react-native";
 import AuthModel, { User } from "../model/AuthModel";
 import { AsyncStorage } from 'react-native';
+import { AntDesign } from "@expo/vector-icons";
 
 const LoginPage: FC<{ navigation: any }> = ({ navigation }) => {
   const [username, onText1Change] = useState<string>("");
   const [name, onText4Change] = useState<string>("");
   const [password, onText2Change] = useState<string>("");
   const [avatarUri, setAvatrUri] = useState("")
-  //Stay LoggedIn
-   useEffect(() => {
-     AsyncStorage.getItem('refreshToken').then(async token => {
-       if (token) {
-         navigation.replace("UserDetailsPage");
-       }
+  //Stay Log In
+  useEffect(() => {
+    AsyncStorage.getItem('refreshToken').then(async token => {
+      if (token) {
+        navigation.replace("UserDetailsPage");
+      }
     });
-   }, [navigation]);
+  }, [navigation]);
 
   const pressHandlerLogin = async () => {
     const user: User = {
@@ -35,20 +37,20 @@ const LoginPage: FC<{ navigation: any }> = ({ navigation }) => {
       avatarUrl: avatarUri
     };
     const d = await AuthModel.login(user)
-    .then(async (data) => {
-      if (typeof(data) === 'undefined') {
-        console.log('login failed:', data);
-        Alert.alert("Wrong username or password")
-      } else {
-        console.log('login successful:', data);
-        await AsyncStorage.setItem('accessToken', data[0]);
-        await AsyncStorage.setItem('id', data[1]);
-        await AsyncStorage.setItem('refreshToken', data[2]);
-        navigation.replace("UserDetailsPage");
-      }
-    })
-    .catch((err) => {
-      console.log('login failed:', err);
+      .then(async (data) => {
+        if (typeof (data) === 'undefined') {
+          console.log('login failed:', data);
+          Alert.alert("Try Again")
+        } else {
+          console.log('login successful:', data);
+          await AsyncStorage.setItem('accessToken', data[0]);
+          await AsyncStorage.setItem('id', data[1]);
+          await AsyncStorage.setItem('refreshToken', data[2]);
+          navigation.replace("UserDetailsPage");
+        }
+      })
+      .catch((err) => {
+        console.log('login failed:', err);
       });
   };
 
@@ -58,41 +60,36 @@ const LoginPage: FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <ScrollView>
-    <View style={styles.container}>
-      {/* <Image
-        style={styles.userPictureStyle}
-        source={require("../assets/avatar-icon-images-4.jpg")}
-      ></Image> */}
+      <View style={styles.container}>
+        <TextInput
+          style={styles.input}
+          onChangeText={onText1Change}
+          placeholder="Email"
+          value={username}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={onText2Change}
+          placeholder="Password"
+          secureTextEntry={true}
+          value={password}
+        />
 
-      <TextInput
-        style={styles.input}
-        onChangeText={onText1Change}
-        placeholder="Email"
-        value={username}
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={onText2Change}
-        placeholder="Password"
-        secureTextEntry={true}
-        value={password}
-      />
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={styles.button} onPress={pressHandlerLogin}>
+            <AntDesign name="login" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={pressHandlerLogin}>
-          <Text style={styles.buttonText}>Log In</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={styles.button} onPress={pressHandlerSignUp}>
+            <FontAwesome name="user-plus" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+        <View>
+          <Text style={styles.text}>or</Text>
+        </View>
       </View>
-
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={pressHandlerSignUp}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-      <View>
-        <Text style={styles.text}>or</Text>
-      </View>
-    </View>
     </ScrollView>
   );
 };

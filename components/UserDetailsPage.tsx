@@ -7,17 +7,19 @@ import {
   View,
   TextInput,
   Alert,
-  
+
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import AuthModel, { Token } from "../model/AuthModel";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { CommonActions } from '@react-navigation/native';
 import UserModel, { UserUpdate } from "../model/UserModel";
 import * as ImagePicker from 'expo-image-picker';
+import { Colors } from "react-native/Libraries/NewAppScreen";
+import yargsParser from "yargs-parser";
 
 
-const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
+const UserDetailsPage: FC<{ navigation: any }> = ({ navigation }) => {
   const [fullName, setFullName] = useState<string>("");
   const [profilePicture, setProfilePicture] = useState<string>(
     "https://randomuser.me/api/portraits/men/1.jpg"
@@ -26,21 +28,21 @@ const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
   const [tempFullName, setTempFullName] = useState(fullName);
   const [tempPicture, setTempPicture] = useState<string>("");
 
-    var UriAfretChange = ""
+  var UriAfretChange = ""
 
-    
-  const loadUser = async ()=>{
+
+  const loadUser = async () => {
     const id = await AsyncStorage.getItem('id')
     const res = await UserModel.getUserById(id)
-    
+
     setFullName(res[0])
     setProfilePicture(res[1])
   }
 
   useEffect(() => {
-    try{
+    try {
       loadUser()
-    } catch(err) {
+    } catch (err) {
       console.log('fail signup' + err)
     }
   }, []);
@@ -50,9 +52,9 @@ const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
   };
 
   const handleTakePhoto = async () => {
-    try{
+    try {
       const res = await ImagePicker.launchCameraAsync()
-      if(!res.canceled && res.assets.length > 0){
+      if (!res.canceled && res.assets.length > 0) {
         const uri = res.assets[0].uri;
         UriAfretChange = uri
         console.log("while: " + uri)
@@ -60,7 +62,7 @@ const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
         setProfilePicture(uri)
         console.log("while pp: " + profilePicture)
       }
-    }catch(err){
+    } catch (err) {
       console.log("open camera error" + err)
     }
   };
@@ -82,23 +84,23 @@ const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
     console.log("Loading user details...");
     loadUser();
   };
-  
-   
+
+
   const handleSaveName = async () => {
     setFullName(tempFullName);
     const id_ = await AsyncStorage.getItem('id')
-    const up : UserUpdate = {
+    const up: UserUpdate = {
       id: id_,
       name: tempFullName,
       avatarUrl: profilePicture
     }
-    try{
+    try {
       const res = await UserModel.upadteUser(up)
       console.log("update user success")
-    } catch(err){
+    } catch (err) {
       console.log("update user failed " + err)
     }
-    
+
     setIsEditingName(false);
   };
 
@@ -110,17 +112,17 @@ const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
   const handleEditPicture = async () => {
     console.log("before: " + profilePicture)
     await handleTakePhoto()
-    console.log("after: " +profilePicture)
+    console.log("after: " + profilePicture)
     const id_ = await AsyncStorage.getItem('id')
-    const up : UserUpdate = {
+    const up: UserUpdate = {
       id: id_,
       name: fullName,
       avatarUrl: UriAfretChange
     }
-    try{
+    try {
       const res = await UserModel.upadteUser(up)
       console.log("update user success")
-    } catch(err){
+    } catch (err) {
       console.log("update user failed " + err)
     }
   };
@@ -131,14 +133,16 @@ const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
         <View style={styles.nameContainer}>
           <TextInput
             style={styles.fullNameInput}
+            placeholderTextColor={'lightslategrey'}
             value={tempFullName}
             onChangeText={(text) => setTempFullName(text)}
+
           />
           <TouchableOpacity onPress={handleSaveName}>
-          <AntDesign name="save" size={24} color="black" />
+            <FontAwesome name="save" size={24} color="lightslategrey" />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleCancelEditName}>
-          <AntDesign name="close" size={24} color="black" />
+            <AntDesign name="close" size={24} color="lightslategrey" />
           </TouchableOpacity>
         </View>
       );
@@ -147,7 +151,7 @@ const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
         <View style={styles.nameContainer}>
           <Text style={styles.fullName}>{fullName}</Text>
           <TouchableOpacity onPress={handleEditName} >
-          <AntDesign name="edit" size={24} color="black" />
+            <FontAwesome name="edit" size={24} color="hotpink" />
           </TouchableOpacity>
         </View>
       );
@@ -157,15 +161,15 @@ const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.logoutButton} onPress={() => pressHandlerLogOut()}>
-      <AntDesign name="logout" size={24} color="black" />
-        </TouchableOpacity>
+        <FontAwesome name="sign-out" size={24} color="white" />
+      </TouchableOpacity>
       <View style={styles.profilePictureContainer}>
         <Image style={styles.profilePicture} source={{ uri: profilePicture }} />
-        <View style={styles.editButtonContainer}>
-          <TouchableOpacity onPress={handleEditPicture}>
-            <AntDesign name="picture" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
+      </View>
+      <View style={styles.editButtonContainer}>
+        <TouchableOpacity onPress={handleEditPicture}>
+          <FontAwesome name="file-photo-o" size={24} color="pink" selectionColor={'grey'} />
+        </TouchableOpacity>
       </View>
       {renderName()}
       <View style={styles.buttonsContainer}>
@@ -173,15 +177,15 @@ const UserDetailsPage: FC<{navigation: any}> = ({navigation}) => {
           style={styles.seeAllPostsButton}
           onPress={() => navigation.navigate("AllPostsPage")}
         >
-          <AntDesign name="book" size={24} color="white" />
+          <AntDesign name="book" size={24} color="grey" />
           <Text style={styles.createPostButtonText}>See All Posts</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.createPostButton}
           onPress={() => navigation.navigate("CreatePostPage")}
         >
-          <AntDesign name="plus" size={24} color="white" />
-          <Text style={styles.createPostButtonText}>Create Post</Text>
+          <AntDesign name="plus" size={24} color="grey" />
+          <Text selectionColor={'black'} style={styles.createPostButtonText}>Create Post</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -199,7 +203,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 50,
     alignSelf: "center",
-    backgroundColor: "black",
+    backgroundColor: "pink",
     borderRadius: 30,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -209,12 +213,12 @@ const styles = StyleSheet.create({
   logoutButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "red",
+    backgroundColor: "pink",
     padding: 10,
     borderRadius: 10,
   },
   seeAllPostsButton: {
-    backgroundColor: "black",
+    backgroundColor: "pink",
     borderRadius: 30,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -222,13 +226,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoutButtonText: {
-    color: 'black',
+    color: 'grey',
     fontSize: 23,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   createPostButtonText: {
-    color: "white",
+    color: "grey",
     fontSize: 18,
     fontWeight: "bold",
     marginLeft: 10,
@@ -240,12 +244,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 40,
     height: 40,
-    borderRadius: 25,
+    borderRadius: 200,
     backgroundColor: "#f5f5f5",
     justifyContent: "center",
     alignItems: "center",
-    right: 10,
-    bottom: 10,
+    right: 105,
+    top: 85, // new position for the editButtonContainer
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: {
@@ -254,13 +258,13 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  }, 
+  },
   profilePicture: {
-    width: 150,
-    height: 150,
-    borderRadius: 10,
+    width: 220,
+    height: 220,
+    borderRadius: 150,
     borderWidth: 3,
-    borderColor: "black",
+    borderColor: "grey",
   },
   cancelText: {
     fontSize: 18,
@@ -280,7 +284,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   nameContainer: {
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     alignItems: "center",
   },
   fullName: {
@@ -293,12 +297,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginRight: 10,
     borderBottomWidth: 1,
-    borderColor: "black",
+    borderColor: "lightslategrey ",
     padding: 5,
   },
   editText: {
     fontSize: 18,
-    color: "black",
+    color: "pink",
     padding: 5,
     fontWeight: "bold",
     backgroundColor: "red",
@@ -351,7 +355,7 @@ const styles = StyleSheet.create({
   },
   editProfilePictureIcon: {
     fontSize: 20,
-    color: "black",
+    color: "pink",
   },
 });
 

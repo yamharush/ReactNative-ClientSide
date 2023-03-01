@@ -86,7 +86,6 @@ const AllPostsPage: FC<{ route: any, navigation: any }> = ({ route, navigation }
     );
 };
 
-
 const styles = StyleSheet.create({
     container: {
         marginTop: StatusBar.currentHeight,
@@ -100,19 +99,29 @@ const styles = StyleSheet.create({
         margin: 4,
         flexDirection: "row",
         height: 150,
-        elevation: 1,
+        elevation: 5,
         borderRadius: 2,
+        backgroundColor: "#ffffff",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     userDetailsRow: {
         flexDirection: "row",
         height: 40,
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        marginTop: 5
     },
     listRowImage: {
         margin: 10,
         resizeMode: "contain",
         height: 130,
         width: 130,
+        borderRadius: 80
     },
     listRowTextContainer: {
         flex: 1,
@@ -120,17 +129,27 @@ const styles = StyleSheet.create({
         justifyContent: "space-around"
     },
     listRowName: {
-        fontSize: 30
+        fontSize: 35,
+        fontWeight: "bold"
     },
     listRowId: {
-        fontSize: 25
+        fontSize: 25,
+        color: "#8f8f8f"
     },
     profilePicture: {
-        width: 35,
-        height: 35,
-        borderRadius: 75,
+        width: 45,
+        height: 45,
+        borderRadius: 80,
         marginEnd: 20
     },
+    pinkBackground: {
+        backgroundColor: "#ff69b4"
+    },
+    greyText: {
+        color: "#8f8f8f"
+    }
 });
+
+
 
 export default AllPostsPage

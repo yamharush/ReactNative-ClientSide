@@ -22,41 +22,41 @@ const SignupPage: FC<{ navigation: any }> = ({ navigation }) => {
   const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
 
   const handleChoosePhoto = async () => {
-    try{
+    try {
       const res = await ImagePicker.launchImageLibraryAsync()
-      if(!res.canceled && res.assets.length > 0){
+      if (!res.canceled && res.assets.length > 0) {
         const uri = res.assets[0].uri;
         setAvatrUri(uri)
       }
-    }catch(err){
+    } catch (err) {
       console.log("open camera error" + err)
     }
   };
 
   const handleTakePhoto = async () => {
-    try{
+    try {
       const res = await ImagePicker.launchCameraAsync()
-      if(!res.canceled && res.assets.length > 0){
+      if (!res.canceled && res.assets.length > 0) {
         const uri = res.assets[0].uri;
         setAvatrUri(uri)
       }
-    }catch(err){
+    } catch (err) {
       console.log("open camera error" + err)
     }
   };
 
   const pressHandlerSignUp = async () => {
-    alert("Hi " + name + " Welcome to the app , please log in");
+    alert("Hi " + name + "Please log in");
     const user: User = {
       email: username,
       name: name,
       password: password,
       avatarUrl: avatarUri
     }
-    try{
+    try {
       await AuthModel.register(user)
       console.log('success signup signuppage')
-    } catch(err) {
+    } catch (err) {
       console.log('fail signup' + err)
     }
     navigation.goBack()
@@ -69,49 +69,49 @@ const SignupPage: FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <ScrollView>
-    <View style={styles.container}>
-      <TouchableOpacity onPress={handleChoosePhoto}>
-        <View style={styles.imageContainer}>
-          {avatarUri && <Image source={{uri:avatarUri}} style={styles.image} />}
-          {!avatarUri && <Text style={styles.choosePhotoText}>Choose Photo</Text>}
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handleTakePhoto}>
-        <Text style={styles.takePhotoText}>Take Photo</Text>
-      </TouchableOpacity>
-      <TextInput
-        style={styles.input}
-        onChangeText={onText1Change}
-        placeholder="email"
-        value={username}
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={onText4Change}
-        placeholder="name"
-        value={name}
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={onText2Change}
-        placeholder="password"
-        value={password}
-        secureTextEntry={true}
-      />
-      <TextInput
-        style={[styles.input, !passwordsMatch ? styles.inputError : null]}
-        onChangeText={onConfirmPasswordChange}
-        placeholder="confirm password"
-        value={confirmPassword}
-        secureTextEntry={true}
-      />
-
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={pressHandlerSignUp}>
-          <Text style={styles.buttonText}>Sign Up</Text>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={handleChoosePhoto}>
+          <View style={styles.imageContainer}>
+            {avatarUri && <Image source={{ uri: avatarUri }} style={styles.image} />}
+            {!avatarUri && <Text style={styles.choosePhotoText}>Choose Photo</Text>}
+          </View>
         </TouchableOpacity>
+        <TouchableOpacity onPress={handleTakePhoto}>
+          <Text style={styles.takePhotoText}>Take Photo</Text>
+        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          onChangeText={onText1Change}
+          placeholder="email"
+          value={username}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={onText4Change}
+          placeholder="name"
+          value={name}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={onText2Change}
+          placeholder="password"
+          value={password}
+          secureTextEntry={true}
+        />
+        <TextInput
+          style={[styles.input, !passwordsMatch ? styles.inputError : null]}
+          onChangeText={onConfirmPasswordChange}
+          placeholder="confirm password"
+          value={confirmPassword}
+          secureTextEntry={true}
+        />
+
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={styles.button} onPress={pressHandlerSignUp}>
+            <Text style={styles.buttonText}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
     </ScrollView>
   );
 };
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#999",
-    textAlign:'center'
+    textAlign: 'center'
   },
   takePhotoText: {
     fontSize: 18,

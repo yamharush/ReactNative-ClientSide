@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Final_Project",
-    "slug": "Final_Project",
+    "name": "ClientSide",
+    "slug": "ClientSide",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
